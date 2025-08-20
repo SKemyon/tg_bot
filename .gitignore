@@ -1,0 +1,52 @@
+# --- Python compiled files ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# --- Virtual Environments (любой уровень вложенности) ---
+venv/
+.venv/
+ENV/
+env/
+
+# --- Environment variables ---
+.env
+*.env
+
+# --- Logs ---
+logs/
+*.log
+*.out
+*.err
+
+# --- Databases (SQLite и др.) ---
+*.sqlite3
+*.db
+
+# --- Distribution / Packaging ---
+build/
+dist/
+*.egg-info/
+.eggs/
+pip-wheel-metadata/
+
+# --- IDE / Editors ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- OS Specific ---
+.DS_Store
+Thumbs.db
+
+# --- Node.js (если фронтенд вместе с ботом) ---
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# --- Exceptions ---
+# Разрешаем пример env файла для других разработчиков
+!.env.example
