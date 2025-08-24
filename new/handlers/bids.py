@@ -52,7 +52,12 @@ def format_lot_card(lot):
     price = lot.current_price or lot.start_price
     return (
         f"📦 <b>{lot.title}</b>\n"
-        f"📝 {lot.description}\n"
+        f"📝 {lot.condition}\n"
+        f"🛠 Ремонт:{lot.repairs}\n"
+        f"🔋 Аккумулятор: {lot.battery}\n"
+        f"💾 Память: {lot.memory}\n"
+        f"📅 Год покупки: {lot.year}\n"
+        f"🔒 Блокировки: {lot.locks}\n"
         f"💰 <b>Текущая цена:</b> {price}₽\n"
         f"🆔 ID: <code>{lot.id}</code>"
     )

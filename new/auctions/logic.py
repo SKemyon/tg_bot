@@ -65,17 +65,27 @@ async def start_auction(lot_id: int, bot):
         if winner:
             winner_user_id = winner.user_id
             amount = winner.amount
+
+            # кнопки для продавца
+            kb = InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text="✅ Согласиться", callback_data=f"accept_deal_{lot.id}_{winner_user_id}")],
+                [InlineKeyboardButton(text="❌ Отказаться", callback_data=f"reject_deal_{lot.id}_{winner_user_id}")]
+            ])
+
             await bot.send_message(
                 lot.seller_id,
-                f"Аукцион завершён! Победитель: {winner_user_id} с ставкой {amount} ₽"
+                f"⚡ Аукцион завершён!\nПобедитель предложил {amount} ₽ за '{lot.title}'.\n"
+                f"Согласитесь на сделку и мы отправим Ваши контакты покупателю.",
+                reply_markup=kb
             )
             await bot.send_message(
                 settings.auction_channel_id,
-                f"Аукцион по лоту '{lot.title}' завершён! Победил пользователь {winner_user_id} со ставкой {amount} ₽"
+                f"Аукцион по лоту '{lot.title}' завершён! Победная ставка {amount} ₽. "
             )
+
             await bot.send_message(
                 winner_user_id,
-                f"Поздравляем!!!\nВы выйграли лот '{lot.title}' за {amount} ₽"
+                f"🎉 Поздравляем!!!\nВы выйграли лот '{lot.title}' за {amount} ₽\nЕсли продавец согласится на Вашу ставку, мы пришлем Вам его контактный номер."
             )
         else:
             await bot.send_message(

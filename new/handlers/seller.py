@@ -137,7 +137,7 @@ async def model_selected(callback: types.CallbackQuery, state: FSMContext):
     photos_kb = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="Готово ✅", callback_data="photos_done")]
     ])
-    await callback.message.answer("📸 1. На одной из фоторгафий должен быть IMEI\n"
+    await callback.message.answer("\n📸 1. На одной из фоторгафий должен быть IMEI\n"
                                   "2. Должна быть фоторгафия со включенным, желательно белым, экраном\n"
                                   "3. Сфотографируйте устройство со всех сторон\n"
                                   "4. Подробные фото деффектов (если они присутсвуют)\n"
@@ -219,7 +219,7 @@ async def set_year(message: Message, state: FSMContext):
     if data.get("edit_mode"):
         await return_to_preview(message, state)
     else:
-        await message.answer("📦 Опишите общее состояние телефона:")
+        await message.answer("📦 Опишите общее состояние телефона.\n\n1.Обязательно укажите работают ли микрофоны и динамики.\n\n2.Нет ли проблем с Wi-fi, Bluetooth, звонками или другими модулями?:")
         await state.set_state(SellerStates.condition)
 
 @router.message(SellerStates.condition)
@@ -229,7 +229,7 @@ async def set_condition(message: Message, state: FSMContext):
     if data.get("edit_mode"):
         await return_to_preview(message, state)
     else:
-        await message.answer("🔋 Укажите состояние аккумулятора (в % или словах):")
+        await message.answer("🔋 Укажите состояние аккумулятора (в %):")
         await state.set_state(SellerStates.battery)
 
 @router.message(SellerStates.battery)
@@ -239,7 +239,7 @@ async def set_battery(message: Message, state: FSMContext):
     if data.get("edit_mode"):
         await return_to_preview(message, state)
     else:
-        await message.answer("🛠 Был ли телефон в ремонте? (Да/Нет):")
+        await message.answer("🛠 Был ли телефон в ремонте? Если был то перечислите работы:")
         await state.set_state(SellerStates.repairs)
 
 @router.message(SellerStates.repairs)
@@ -249,7 +249,7 @@ async def set_repairs(message: Message, state: FSMContext):
     if data.get("edit_mode"):
         await return_to_preview(message, state)
     else:
-        await message.answer("💧 Падал ли в воду? (Да/Нет):")
+        await message.answer("Укажите номер по которому с Вами свяжется победитель:")
         await state.set_state(SellerStates.water)
 
 @router.message(SellerStates.water)
@@ -259,7 +259,7 @@ async def set_water(message: Message, state: FSMContext):
     if data.get("edit_mode"):
         await return_to_preview(message, state)
     else:
-        await message.answer("🔒 Нет ли блокировок Apple ID/Google? (Да/Нет):")
+        await message.answer("🔒 Нет ли блокировок Apple ID/Google или чего-то еще?:")
         await state.set_state(SellerStates.locks)
 
 
@@ -342,7 +342,7 @@ async def show_confirmation(message_or_callback, state: FSMContext):
         f"📦 Состояние: {condition}",
         f"🔋 Батарея: {battery}",
         f"🛠 Ремонты: {repairs}",
-        f"💧 Попадание в воду: {water}",
+        f"📱 Номер телефона: {water}",
         f"🔒 Блокировки: {locks}",
         f"💰 Стартовая цена: {start_price}₽"
     )
@@ -355,7 +355,7 @@ async def show_confirmation(message_or_callback, state: FSMContext):
         [InlineKeyboardButton(text="✏ Изменить состояние", callback_data="edit_condition")],
         [InlineKeyboardButton(text="✏ Изменить батарею", callback_data="edit_battery")],
         [InlineKeyboardButton(text="✏ Изменить ремонты", callback_data="edit_repairs")],
-        [InlineKeyboardButton(text="✏ Изменить попадание в воду", callback_data="edit_water")],
+        [InlineKeyboardButton(text="✏ Изменить номер телефона", callback_data="edit_water")],
         [InlineKeyboardButton(text="✏ Изменить блокировки", callback_data="edit_locks")],
         [InlineKeyboardButton(text="✏ Изменить фото", callback_data="edit_photos")]
     ])
@@ -510,7 +510,7 @@ async def edit_water(callback: types.CallbackQuery, state: FSMContext):
         await state.clear()
         return
     await state.update_data(edit_mode=True)
-    await callback.message.answer("💧 Падал ли в воду? (Да/Нет):")
+    await callback.message.answer("Введите номер телефона:")
     await state.set_state(SellerStates.water)
 
 
@@ -608,7 +608,7 @@ async def confirm_publish(callback: types.CallbackQuery, state: FSMContext):
         f"📦 Состояние: {data['condition']}\n"
         f"🔋 Аккумулятор: {data['battery']}\n"
         f"🛠 Ремонт: {data['repairs']}\n"
-        f"💧 Падал в воду: {data['water']}\n"
+        f"Номер телефона: {data['water']}\n"
         f"🔒 Блокировки: {data['locks']}"
     )
 
@@ -691,8 +691,8 @@ async def approve_lot(callback: types.CallbackQuery):
         f"📦 Состояние: {lot.condition}\n"
         f"🔋 Аккумулятор: {lot.battery}\n"
         f"🛠 Ремонт: {lot.repairs}\n"
-        f"💧 Падал в воду: {lot.water}\n"
-        f"🔒 Блокировки: {lot.locks}"
+        f"🔒 Блокировки: {lot.locks}\n"
+        f"ID: {lot.id}"
     )
 
     text = as_marked_section(
@@ -716,108 +716,8 @@ async def approve_lot(callback: types.CallbackQuery):
     await bot.send_message(lot.seller_id, f"✅ Лот одобрен и опубликован! Торги начнутся через {settings.auction_duration_minutes} минут")
     await callback.answer(f"✅ Лот одобрен и опубликован! Торги начнутся через {settings.auction_duration_minutes} минут", show_alert=True)
 
-@router.callback_query(F.data.startswith("reject_"))
-async def reject_lot(callback: types.CallbackQuery):
-    lot_id = int(callback.data.split("_")[1])
 
-    async with async_session() as session:
-        lot = await session.get(Lot, lot_id)
-        if not lot or lot.status != LotStatus.pending:
-            await callback.answer("⚠️ Лот не найден или уже обработан.", show_alert=True)
-            return
 
-        lot.status = LotStatus.rejected
-        await session.commit()
-
-    bot = callback.bot
-    await bot.send_message(lot.seller_id,"❌Ваш лот отклонён.Пожалуйста, уточните причину у службы поддержки")
-    await callback.answer("❌ Лот отклонён", show_alert=True)
-# @router.callback_query(F.data == "confirm_publish")
-# async def confirm_publish(callback: types.CallbackQuery, state: FSMContext):
-#     data = await state.get_data()
-
-#
-#     # валидируем наличие обязательных полей
-#     required = ["title", "description", "start_price"]
-#     if not all(k in data and data[k] for k in required):
-#         logger.warning("confirm_publish: missing data for user %s: %s", callback.from_user.id, data)
-#         try:
-#             await callback.message.answer("❌ Лот устарел или данные утеряны. Пожалуйста, начните создание заново.", reply_markup=main_menu)
-#         except Exception:
-#             try:
-#                 await callback.answer("❌ Лот устарел или данные утеряны.", show_alert=True)
-#             except Exception:
-#                 pass
-#         await state.clear()
-#         return
-#
-#     title = data["title"]
-#     description = data["description"]
-#     start_price = data["start_price"]
-#     images = data.get("images", [])
-#
-#     try:
-#         async with async_session() as session:
-#             lot = Lot(
-#                 title=title,
-#                 description=description,
-#                 start_price=start_price,
-#                 seller_id=callback.from_user.id,
-#             )
-#             session.add(lot)
-#             await session.flush()
-#
-#             for file_id in images:
-#                 session.add(LotImage(lot_id=lot.id, file_id=file_id))
-#
-#             await session.commit()
-#
-#         # подготовим текст и медиа и отправим в канал
-#         text = as_marked_section(
-#             Bold("🔥 Новый лот!"),
-#             f"📱 {title}",
-#             f"📝 {description}",
-#             f"💰 Старт: {start_price}₽",
-#             f"⏳ Торги начнутся через {settings.auction_duration_minutes} минут."
-#         )
-#
-#         if images:
-#             try:
-#                 media = [InputMediaPhoto(media=img) for img in images[:10]]
-#                 await callback.bot.send_media_group(chat_id=settings.auction_channel_id, media=media)
-#             except Exception:
-#                 logger.exception("confirm_publish: failed to send media_group to channel")
-#
-#         try:
-#             await callback.bot.send_message(settings.auction_channel_id, text.as_html())
-#         except Exception:
-#             logger.exception("confirm_publish: failed to send message to channel")
-#
-#         # запуск аукциона
-#         try:
-#             asyncio.create_task(start_auction(lot.id, callback.bot))
-#         except Exception:
-#             logger.exception("confirm_publish: failed to start auction task")
-#
-#         try:
-#             await callback.message.answer("✅ Лот опубликован! Торги начнутся через {} минут.".format(settings.auction_duration_minutes), reply_markup=main_menu)
-#         except Exception:
-#             try:
-#                 await callback.answer("✅ Лот опубликован!", show_alert=True)
-#             except Exception:
-#                 pass
-#
-#     except Exception:
-#         logger.exception("confirm_publish: unexpected error while saving/publishing lot for user %s", callback.from_user.id)
-#         try:
-#             await callback.message.answer("❌ Не удалось опубликовать лот. Попробуйте позже.", reply_markup=main_menu)
-#         except Exception:
-#             try:
-#                 await callback.answer("❌ Не удалось опубликовать лот.", show_alert=True)
-#             except Exception:
-#                 pass
-#     finally:
-#         await state.clear()
 
 @router.message(F.text == "ℹ️ Правила")
 async def rules_handler(message: Message):
@@ -834,186 +734,78 @@ async def rules_handler(message: Message):
 
 
 
-#oooooooooooooooooooooooo
-# import asyncio
-# import re
-# from io import BytesIO
-# from PIL import Image, ImageStat
-# import pytesseract
-# from aiogram import Bot, Dispatcher, F, Router
-# from aiogram.types import Message, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
-# from aiogram.fsm.context import FSMContext
-# from aiogram.fsm.state import StatesGroup, State
-# from aiogram.filters import CommandStart
-#
-# MODEL_PRICES = {
-#     "iPhone 12": 85000,
-#     "iPhone 12 Pro": 120000,
-#     "iPhone 13": 150000,
-#     "iPhone 13 Pro": 180000,
-#     "Samsung Galaxy S21": 90000,
-#     "Samsung Galaxy S22": 130000
-# }
-#
-# def models_kb():
-#     return ReplyKeyboardMarkup(
-#         keyboard=[[KeyboardButton(text=m)] for m in MODEL_PRICES],
-#         resize_keyboard=True
-#     )
-#
-# def finish_photos_kb():
-#     return ReplyKeyboardMarkup(
-#         keyboard=[
-#             [KeyboardButton(text="✅ Достаточно фото")],
-#         ],
-#         resize_keyboard=True
-#     )
-#
-# # ==== Проверки фото ====
-# def is_unique_photo(file_bytes: bytes, existing_hashes: set) -> bool:
-#     # import hashlib
-#     # photo_hash = hashlib.md5(file_bytes).hexdigest()
-#     # if photo_hash in existing_hashes:
-#     #     return False
-#     # existing_hashes.add(photo_hash)
-#     return True
-#
-# def is_good_quality(image: Image.Image, min_width=400, min_height=400, min_brightness=30) -> bool:
-#     # if image.width < min_width or image.height < min_height:
-#     #     return False
-#     # stat = ImageStat.Stat(image.convert("L"))
-#     # brightness = stat.mean[0]
-#     # if brightness < min_brightness:
-#     #     return False
-#     return True
-#
-# def extract_imei_from_image(image: Image.Image) -> str | None:
-#     text = pytesseract.image_to_string(image)
-#     matches = re.findall(r"\b\d{15}\b", text)
-#     return matches[0] if matches else None
-#
-# # ==== Обработчики ====
-# @router.message(CommandStart())
-# async def cmd_start(message: Message):
-#     await message.answer("👋 Привет! Готов продать свой телефон за 30 минут без лишних контактов?", reply_markup=main_menu())
-#
-# @router.message(F.text == "📤 Хочу продать")
-# async def choose_model(message: Message, state: FSMContext):
-#     await message.answer("📱 Выберите модель телефона:", reply_markup=models_kb())
-#     await state.set_state(SellerStates.model)
-#
-# @router.message(SellerStates.model)
-# async def set_model(message: Message, state: FSMContext):
-#     model = message.text
-#     if model not in MODEL_PRICES:
-#         await message.answer("❌ Пожалуйста, выберите модель из списка.", reply_markup=models_kb())
-#         return
-#     start_price = MODEL_PRICES[model]
-#     await state.update_data(model=model, price=start_price, photos=[], photo_hashes=set())
-#     await message.answer(f"✅ Модель: {model}\n💰 Стартовая цена: {start_price} ₸\n\nТеперь пришлите фото телефона (минимум 3).", reply_markup=finish_photos_kb())
-#     await state.set_state(SellerStates.photos)
-#
-# @router.message(SellerStates.photos, F.photo)
-# async def collect_photos(message: Message, state: FSMContext):
-#     data = await state.get_data()
-#     photos = data.get("photos", [])
-#     photo_hashes = data.get("photo_hashes", set())
-#
-#     file = await message.bot.get_file(message.photo[-1].file_id)
-#     file_bytes = await message.bot.download_file(file.file_path)
-#     file_bytes_data = file_bytes.read()
-#
-#     img = Image.open(BytesIO(file_bytes_data))
-#
-#     if not is_unique_photo(file_bytes_data, photo_hashes):
-#         await message.answer("⚠ Это фото уже было отправлено. Пришлите другое.")
-#         return
-#     if not is_good_quality(img):
-#         await message.answer("⚠ Фото слишком маленькое или темное. Пришлите более качественное.")
-#         return
-#
-#     photos.append(message.photo[-1].file_id)
-#     await state.update_data(photos=photos, photo_hashes=photo_hashes)
-#
-#     await message.answer(f"📸 Фото {len(photos)} получено. Нужно минимум 3.")
-#
-# @router.message(SellerStates.photos, F.text == "✅ Достаточно фото")
-# async def enough_photos(message: Message, state: FSMContext):
-#     data = await state.get_data()
-#     if len(data.get("photos", [])) < 3:
-#         await message.answer("❌ Нужно минимум 3 фото.")
-#         return
-#     await message.answer("📷 Теперь пришлите фото экрана с IMEI.")
-#     await state.set_state(SellerStates.imei)
-#
-# @router.message(SellerStates.imei, F.photo)
-# async def handle_imei_photo(message: Message, state: FSMContext):
-#     file = await message.bot.get_file(message.photo[-1].file_id)
-#     file_bytes = await message.bot.download_file(file.file_path)
-#     img = Image.open(BytesIO(file_bytes.read()))
-#     imei = 444444444
-#     # imei = extract_imei_from_image(img)
-#     # if not imei:
-#     #     await message.answer("❌ Не удалось распознать IMEI. Введите его вручную.")
-#     #     return
-#     await state.update_data(imei=imei)
-#     await message.answer(f"✅ IMEI получен: {imei}\n\nУкажите объём памяти (например: 128GB).")
-#     await state.set_state(SellerStates.memory)
-#
-# @router.message(SellerStates.memory)
-# async def set_memory(message: Message, state: FSMContext):
-#     await state.update_data(memory=message.text)
-#     await message.answer("📅 Укажите год покупки телефона:")
-#     await state.set_state(SellerStates.year)
-#
-# @router.message(SellerStates.year)
-# async def set_year(message: Message, state: FSMContext):
-#     await state.update_data(year=message.text)
-#     await message.answer("📦 Опишите общее состояние телефона:")
-#     await state.set_state(SellerStates.condition)
-#
-# @router.message(SellerStates.condition)
-# async def set_condition(message: Message, state: FSMContext):
-#     await state.update_data(condition=message.text)
-#     await message.answer("🔋 Укажите состояние аккумулятора (в % или словах):")
-#     await state.set_state(SellerStates.battery)
-#
-# @router.message(SellerStates.battery)
-# async def set_battery(message: Message, state: FSMContext):
-#     await state.update_data(battery=message.text)
-#     await message.answer("🛠 Был ли телефон в ремонте? (Да/Нет):")
-#     await state.set_state(SellerStates.repairs)
-#
-# @router.message(SellerStates.repairs)
-# async def set_repairs(message: Message, state: FSMContext):
-#     await state.update_data(repairs=message.text)
-#     await message.answer("💧 Падал ли в воду? (Да/Нет):")
-#     await state.set_state(SellerStates.water)
-#
-# @router.message(SellerStates.water)
-# async def set_water(message: Message, state: FSMContext):
-#     await state.update_data(water=message.text)
-#     await message.answer("🔒 Нет ли блокировок Apple ID/Google? (Да/Нет):")
-#     await state.set_state(SellerStates.locks)
-#
-# @router.message(SellerStates.locks)
-# async def set_locks(message: Message, state: FSMContext):
-#     await state.update_data(locks=message.text)
-#     data = await state.get_data()
-#
-#     lot_summary = (
-#         f"📱 Модель: {data['model']}\n"
-#         f"💰 Стартовая цена: {data['price']} ₸\n"
-#         f"🆔 IMEI: {data['imei']}\n"
-#         f"💾 Память: {data['memory']}\n"
-#         f"📅 Год: {data['year']}\n"
-#         f"📦 Состояние: {data['condition']}\n"
-#         f"🔋 Аккумулятор: {data['battery']}\n"
-#         f"🛠 Ремонт: {data['repairs']}\n"
-#         f"💧 Вода: {data['water']}\n"
-#         f"🔒 Блокировки: {data['locks']}\n"
-#         f"📷 Фото: {len(data['photos'])} шт."
-#     )
-#
-#     await message.answer("✅ Ваша заявка:\n\n" + lot_summary + "\n\nОтправляем на модерацию...")
-#     await state.clear()
+# --- хэндлер согласия продавца ---
+@router.callback_query(F.data.startswith("accept_deal_"))
+async def accept_deal(callback: types.CallbackQuery):
+    parts = callback.data.split("_")
+    lot_id, winner_id = int(parts[-2]), int(parts[-1])
+
+    async with async_session() as session:
+        lot = await session.get(Lot, lot_id)
+        if not lot:
+            await callback.answer("⚠️ Лот не найден.", show_alert=True)
+            return
+        lot_title = lot.title
+        seller_contact = lot.water  # используем как номер телефона продавца
+
+    # Редактируем сообщение: убираем кнопки и меняем текст
+    await callback.message.edit_text(
+        f"✅ Вы приняли сделку по лоту '{lot_title}'. Контакт передан победителю."
+    )
+
+    # Сообщение победителю
+    await callback.bot.send_message(
+        int(winner_id),
+        f"✅ Продавец принял вашу ставку по лоту '{lot_title}'.\n"
+        f"Связаться можно по номеру: {seller_contact}"
+    )
+
+    await callback.answer()
+
+
+@router.callback_query(F.data.startswith("reject_deal_"))
+async def reject_deal(callback: types.CallbackQuery):
+    parts = callback.data.split("_")
+    lot_id, winner_id = int(parts[-2]), int(parts[-1])
+
+    async with async_session() as session:
+        lot = await session.get(Lot, lot_id)
+        if not lot:
+            await callback.answer("⚠️ Лот не найден.", show_alert=True)
+            return
+        lot_title = lot.title
+
+    # Редактируем сообщение: убираем кнопки и меняем текст
+    await callback.message.edit_text(
+        f"❌ Вы отказались от сделки по лоту '{lot_title}'."
+    )
+
+    # Сообщение победителю
+    await callback.bot.send_message(
+        int(winner_id),
+        f"❌ К сожалению, продавец не принял вашу ставку по лоту '{lot_title}'."
+    )
+
+    await callback.answer()
+
+@router.callback_query(F.data.startswith("reject_"))
+async def reject_lot(callback: types.CallbackQuery):
+    parts = callback.data.split("_")
+    # проверяем, что это именно reject_<lot_id>, а не reject_deal_...
+    if len(parts) != 2:
+        return  # игнорируем reject_deal
+    lot_id = int(parts[1])
+
+    async with async_session() as session:
+        lot = await session.get(Lot, lot_id)
+        if not lot or lot.status != LotStatus.pending:
+            await callback.answer("⚠️ Лот не найден или уже обработан.", show_alert=True)
+            return
+
+        lot.status = LotStatus.rejected
+        await session.commit()
+
+    bot = callback.bot
+    await bot.send_message(lot.seller_id,"❌Ваш лот отклонён.Пожалуйста, уточните причину у службы поддержки")
+    await callback.answer("❌ Лот отклонён", show_alert=True)
+
