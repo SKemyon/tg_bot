@@ -621,8 +621,9 @@ async def rules_handler(message: Message):
         "❗ После публикации изменить лот будет нельзя!",
         reply_markup=main_menu
     )
-    file = FSInputFile(r"handlers\public_offer_full.pdf")
-    await message.answer_document(file, caption="Вот ваша публичная оферта 📄")
+    #file = FSInputFile(r"handlers\public_offer_full.pdf")
+    #await message.answer_document(file, caption="Вот ваша публичная оферта 📄")
+    await message.answer_document("BQACAgIAAxkBAAILBmiqyrl460aT0va3aSk3XxoCsuxYAALZgAACSqJZSS72h72QspuONgQ", caption="Вот ваша публичная оферта 📄")  # file_id
 
 
 
@@ -700,4 +701,6 @@ async def reject_lot(callback: types.CallbackQuery):
     bot = callback.bot
     await bot.send_message(lot.seller_id,"❌Ваш лот отклонён.Пожалуйста, уточните причину у службы поддержки")
     await callback.answer("❌ Лот отклонён", show_alert=True)
+
+
 
