@@ -621,7 +621,7 @@ async def rules_handler(message: Message):
         "❗ После публикации изменить лот будет нельзя!",
         reply_markup=main_menu
     )
-    file = FSInputFile(r"C:\Users\kachu\Downloads\public_offer_full.pdf")
+    file = FSInputFile(r"handlers\public_offer_full.pdf")
     await message.answer_document(file, caption="Вот ваша публичная оферта 📄")
 
 
