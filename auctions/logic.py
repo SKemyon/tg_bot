@@ -4,9 +4,9 @@ from datetime import datetime, timedelta
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from sqlalchemy import text
 
-from new.database import async_session
-from new.models import Lot, Bid, Watcher
-from new.config import settings
+from database import async_session
+from models import Lot, Bid, Watcher
+from config import settings
 
 active_auctions = {}  # lot_id -> bool (флаг, активен ли аукцион)
 

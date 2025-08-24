@@ -7,9 +7,9 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.context import FSMContext
 #from aiogram.fsm.state import StatesGroup, State
 
-from new.config import settings
-from new.database import async_session, engine, Base
-from new.handlers import seller, dealer, auctions, bids
+from config import settings
+from database import async_session, engine, Base
+from handlers import seller, dealer, auctions, bids
 
 
 logging.basicConfig(level=logging.INFO)

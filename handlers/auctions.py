@@ -3,9 +3,9 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command
 from aiogram.filters.callback_data import CallbackData
 
-from new.database import async_session
-from new.models import Lot, Watcher, Bid
-from new.auctions.logic import active_auctions
+from database import async_session
+from models import Lot, Watcher, Bid
+from auctions.logic import active_auctions
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 router = Router()

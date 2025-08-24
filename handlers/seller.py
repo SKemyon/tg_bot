@@ -8,11 +8,11 @@ import asyncio
 import logging
 
 
-from new.database import async_session
-from new.models import Lot, LotImage, LotStatus
-from new.states import SellerStates
-from new.config import settings
-from new.auctions.logic import start_auction
+from database import async_session
+from models import Lot, LotImage, LotStatus
+from states import SellerStates
+from config import settings
+from auctions.logic import start_auction
 
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
@@ -48,28 +48,7 @@ main_menu = ReplyKeyboardMarkup(
     resize_keyboard=True
 )
 
-# main_menu_inline = InlineKeyboardMarkup(
-#     inline_keyboard=[
-#         [InlineKeyboardButton(text="📤 Хочу продать", callback_data="start_sell")],
-#         [InlineKeyboardButton(text="📋 Список аукционов", callback_data="list_auctions")],
-#         [InlineKeyboardButton(text="ℹ️ Правила", callback_data="rules")],
-#         [InlineKeyboardButton(text="📞 Поддержка", url="https://t.me/username_support")]
-#     ]
-# )
-#
-# @router.callback_query(F.data == "start_sell")
-# async def alert_info(callback: types.CallbackQuery, state: FSMContext):
-#     # Покажем алерт с краткой информацией
-#     await callback.answer(
-#         "ℹ️ Аукцион — это способ быстро и выгодно продать ваш телефон. "
-#         "Лоты публикуются в канале, и дилеры делают ставки.\n\n"
-#         "⏳ Торги длятся ограниченное время, после чего победитель получает ваш контакт.",
-#         show_alert=True
-#     )
-#     # Переход к выбору модели
-#     await show_model_keyboard(callback)
-#     await state.set_state(SellerStates.title)
-#
+
 
 # ---------- Start selling ----------
 @router.message(Command("sell"))
@@ -145,28 +124,7 @@ async def model_selected(callback: types.CallbackQuery, state: FSMContext):
     await callback.answer("1.На одной из фотографий обязательно должен быть номер IMEI !(можете загрузить скриншот из настроек)", show_alert=True)
     await state.set_state(SellerStates.images)
 
-# ---------- Add photo ----------
-# @router.message(SellerStates.images, F.photo)
-# async def add_photo(message: Message, state: FSMContext):
-#     file_id = message.photo[-1].file_id
-#     data = await state.get_data()
-#     images = data.get("images", [])
-#     images.append(file_id)
-#     await state.update_data(images=images)
-#     photos_kb = InlineKeyboardMarkup(inline_keyboard=[
-#         [InlineKeyboardButton(text="Готово ✅", callback_data="photos_done")]
-#     ])
-#     await message.answer("📷 Фото добавлено. Нажмите на Готово ✅ или отправьте еще фото", reply_markup=photos_kb)
-#
-# # ---------- Photos done ----------
-# @router.callback_query(F.data == "photos_done")
-# async def photos_done(callback: types.CallbackQuery, state: FSMContext):
-#     data = await state.get_data()
-#     if not data.get("images"):
-#         await callback.answer("❌ Добавьте хотя бы одно фото!", show_alert=True)
-#         return
-#     await callback.message.answer("✍️ Введите подробное описание устройства:")
-#     await state.set_state(SellerStates.description)
+
 
 @router.message(SellerStates.images, F.photo)
 async def add_photo(message: Message, state: FSMContext):
@@ -272,41 +230,7 @@ async def get_description(message: Message, state: FSMContext):
 
 # ---------- Show confirmation (preview) ----------
 async def show_confirmation(message_or_callback, state: FSMContext):
-    # data = await state.get_data()
-    #
-    # # Defensive read — don't assume keys exist
-    # title = data.get("title")
-    # description = data.get("description")
-    # start_price = data.get("start_price")
-    # images = data.get("images", [])
-    #
-    # # Если каких-то обязательных данных нет — предупредим пользователя
-    # if not title or not description or not start_price:
-    #     # данные потеряны — попросим начать заново
-    #     text = "⚠️ Похоже, какие-то данные лота отсутствуют. Пожалуйста, начните создание лота заново."
-    #     try:
-    #         if isinstance(message_or_callback, types.CallbackQuery):
-    #             await message_or_callback.message.answer(text, reply_markup=main_menu)
-    #         else:
-    #             await message_or_callback.answer(text, reply_markup=main_menu)
-    #     except Exception:
-    #         logger.exception("show_confirmation: unable to notify user about missing data")
-    #     await state.clear()
-    #     return
-    #
-    # text = as_marked_section(
-    #     Bold("Предпросмотр лота:"),
-    #     f"📱 Модель: {title}",
-    #     f"📝 Описание: {description}",
-    #     f"💰 Стартовая цена: {start_price}₽"
-    # )
-    #
-    # kb = InlineKeyboardMarkup(inline_keyboard=[
-    #     [InlineKeyboardButton(text="✅ Опубликовать", callback_data="confirm_publish")],
-    #     [InlineKeyboardButton(text="✏ Изменить модель", callback_data="edit_model")],
-    #     [InlineKeyboardButton(text="✏ Изменить описание", callback_data="edit_description")],
-    #     [InlineKeyboardButton(text="✏ Изменить фото", callback_data="edit_photos")]
-    # ])
+
     data = await state.get_data()
 
     title = data.get("title")
@@ -534,39 +458,7 @@ async def edit_locks(callback: types.CallbackQuery, state: FSMContext):
 
 
 
-# @router.callback_query(F.data == "edit_model")
-# async def edit_model(callback: types.CallbackQuery, state: FSMContext):
-#     # Вернуться к выбору модели
-#     await show_model_keyboard(callback, edit=True)
-#     await state.set_state(SellerStates.title)
-#
-# @router.callback_query(F.data == "edit_description")
-# async def edit_description(callback: types.CallbackQuery, state: FSMContext):
-#     data = await state.get_data()
-#     if not data:
-#         # данные утеряны — предупреждаем
-#         logger.warning("edit_description: no state data for user %s", callback.from_user.id)
-#         await callback.message.answer("❌ Данные лота утеряны. Пожалуйста, начните создание заново.", reply_markup=main_menu)
-#         await state.clear()
-#         return
-#     await callback.message.answer("✍️ Введите новое описание:")
-#     await state.set_state(SellerStates.description)
-#
-# @router.callback_query(F.data == "edit_photos")
-# async def edit_photos(callback: types.CallbackQuery, state: FSMContext):
-#     data = await state.get_data()
-#     if not data:
-#         logger.warning("edit_photos: no state data for user %s", callback.from_user.id)
-#         await callback.message.answer("❌ Данные лота утеряны. Пожалуйста, начните создание заново.", reply_markup=main_menu)
-#         await state.clear()
-#         return
-#     # сбросим фото и попросим загрузить заново
-#     await state.update_data(images=[])
-#     photos_kb = InlineKeyboardMarkup(inline_keyboard=[
-#         [InlineKeyboardButton(text="Готово ✅", callback_data="photos_done")]
-#     ])
-#     await callback.message.answer("📸 Отправьте новые фото. Когда закончите, нажмите 'Готово ✅'.", reply_markup=photos_kb)
-#     await state.set_state(SellerStates.images)
+
 
 # ---------- Confirm publish ----------
 @router.callback_query(F.data == "confirm_publish")

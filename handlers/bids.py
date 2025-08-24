@@ -11,9 +11,9 @@ from sqlalchemy import desc
 from collections import defaultdict
 import asyncio
 
-from new.database import async_session
-from new.models import Lot, Bid, Watcher
-from new.states import BidStates
+from database import async_session
+from models import Lot, Bid, Watcher
+from states import BidStates
 
 CHANNEL_ID = -1002896763134
 

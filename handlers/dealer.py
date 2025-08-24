@@ -2,8 +2,8 @@ from aiogram import Router
 from aiogram.types import Message
 from aiogram.filters import Command
 from sqlalchemy import select
-from new.database import async_session
-from new.models import Lot
+from database import async_session
+from models import Lot
 
 router = Router()
 

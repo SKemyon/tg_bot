@@ -1,1 +1,1 @@
-worker: python -m new.bot
+worker: python -m bot
