@@ -32,12 +32,84 @@ async def return_to_preview(message: Message, state: FSMContext):
     await show_confirmation(message, state)
 
 DEVICE_MODELS = {
-    "iPhone 13": 30000,
-    "iPhone 14": 40000,
-    "iPhone 15 Pro": 60000,
-    "Samsung S21": 28000,
-    "Samsung S24 Ultra": 50000,
+    # iPhone (X и дальше)
+    "iPhone X": 51000,            # медиана ~85 000 ₸ → 60%
+    "iPhone XR": 54000,           # медиана ~90 000 ₸ → 60%
+    "iPhone XS": 60000,           # медиана ~100 000 ₸ → 60%
+    "iPhone XS Max": 63000,       # медиана ~105 000 ₸ → 60%
+    "iPhone 11": 60000,           # медиана ~100 000 ₸ → 60% :contentReference[oaicite:0]{index=0}
+    "iPhone 11 Pro": 72000,       # оценка (характерно дороже, ~120 000 ₸)
+    "iPhone 11 Pro Max": 90000,   # оценка, медиана ~150 000 ₸
+
+    "iPhone 12": 90000,           # оценка: мед. ~150 000 ₸
+    "iPhone 12 mini": 84000,      # оценка
+    "iPhone 12 Pro": 96000,       # оценка
+    "iPhone 12 Pro Max": 102000,  # оценка
+
+    "iPhone 13": 90000,           # медиана ~150 000 ₸ → 60%
+    "iPhone 13 mini": 81000,      # оценка
+    "iPhone 13 Pro": 102000,      # оценка
+    "iPhone 13 Pro Max": 108000,  # оценка
+
+    "iPhone 14": 126000,          # медиана ~210 000 ₸ → 60%
+    "iPhone 14 Plus": 120000,     # оценка
+    "iPhone 14 Pro": 132000,      # оценка
+    "iPhone 14 Pro Max": 138000,  # оценка
+
+    "iPhone 15": 180000,          # оценка
+    "iPhone 15 Plus": 186000,     # оценка
+    "iPhone 15 Pro": 192000,      # оценка
+    "iPhone 15 Pro Max": 198000,  # оценка
+
+    # Samsung Galaxy S-серия
+    "Samsung S8": 42000,          # оценка 60% от ~70 000 ₸
+    "Samsung S8+": 45000,
+    "Samsung S9": 48000,
+    "Samsung S9+": 51000,
+    "Samsung S10": 54000,
+    "Samsung S10+": 60000,
+    "Samsung S10e": 48000,
+
+    "Samsung S20": 82000,         # медиана ~137 000 ₸ → 60% :contentReference[oaicite:1]{index=1}
+    "Samsung S20+": 84000,
+    "Samsung S20 Ultra": 102000,
+    "Samsung S21": 54000,         # медиана ~90 000 ₸ → 60%
+    "Samsung S21+": 57000,
+    "Samsung S21 Ultra": 60000,
+
+    "Samsung S22": 96000,         # оценка
+    "Samsung S22+": 102000,
+    "Samsung S22 Ultra": 108000,
+
+    "Samsung S23": 120000,        # оценка
+    "Samsung S23+": 126000,
+    "Samsung S23 Ultra": 132000,
+
+    "Samsung S24": 150000,        # оценка
+    "Samsung S24+": 156000,
+    "Samsung S24 Ultra": 288000,  # медиана ~480 000 ₸ → 60% :contentReference[oaicite:2]{index=2}
+
+    # Samsung Note (>=2019)
+    "Note10": 60000,              # оценка ~100 000 ₸ → 60%
+    "Note10+": 66000,
+    "Note20": 84000,
+    "Note20 Ultra": 108000,
+
+    # Samsung A-series (>=2019)
+    "Samsung A10s": 30000,        # оценка ~50 000 ₸ → 60%
+    "Samsung A20s": 33000,
+    "Samsung A30s": 36000,
+    "Samsung A40": 39000,
+    "Samsung A50": 42000,
+    "Samsung A51": 45000,
+    "Samsung A52": 48000,
+    "Samsung A70": 54000,
+    "Samsung A71": 57000,
+    "Samsung A72": 60000,
+    "Samsung A80": 66000,
+    "Samsung A90": 72000,
 }
+
 
 # reply keyboard (fallback / главное меню)
 main_menu = ReplyKeyboardMarkup(
@@ -57,7 +129,7 @@ async def start_selling(message: Message, state: FSMContext):
     await message.answer(
 
         "ℹ️ Аукцион — это быстрый способ выгодно продать телефон.\n\n\n"
-        "📱 УСЛОВИЯ ДЛЯ ПРОДАВЦА"
+        "📱 УСЛОВИЯ ДЛЯ ПРОДАВЦА\n"
         "1. Разрешается выставлять только телефоны, законно принадлежащие вам.\n\n"
         "2. Вы несете ответственность за законность и соответствие описанию товара.(модель, фото, IMEI, состояние).\n\n"
         "3. Сделка и расчёты происходят напрямую с победителем аукциона (покупателем).\n\n"
@@ -108,7 +180,7 @@ async def model_selected(callback: types.CallbackQuery, state: FSMContext):
         pass
 
     await callback.message.answer(
-        f"✅ Вы выбрали: <b>{model_name}</b>\n💰 Стартовая цена: {start_price}₽",
+        f"✅ Вы выбрали: <b>{model_name}</b>\n💰 Стартовая цена: {start_price} тг",
         parse_mode="HTML"
     )
 
@@ -268,7 +340,7 @@ async def show_confirmation(message_or_callback, state: FSMContext):
         f"🛠 Ремонты: {repairs}",
         f"📱 Номер телефона: {water}",
         f"🔒 Блокировки: {locks}",
-        f"💰 Стартовая цена: {start_price}₽"
+        f"💰 Стартовая цена: {start_price}тг"
     )
 
     # Клавиатура для публикации или редактирования
@@ -536,7 +608,7 @@ async def confirm_publish(callback: types.CallbackQuery, state: FSMContext):
             Bold("🔥 Новый лот!"),
             f"📱 {title}",
             full_description,
-            f"💰 Старт: {start_price}₽",
+            f"💰 Старт: {start_price}тг",
             f"👤 Продавец: {callback.from_user.id}"
         )
 
@@ -591,7 +663,7 @@ async def approve_lot(callback: types.CallbackQuery):
         Bold("🔥 Новый лот!"),
         f"📱 {lot.title}",
         full_description,
-        f"💰 Старт: {lot.start_price}₽",
+        f"💰 Старт: {lot.start_price}тг",
         f"⏳ Торги начнутся через {settings.auction_duration_minutes} минут."
     )
 

@@ -58,16 +58,16 @@ def format_lot_card(lot):
         f"💾 Память: {lot.memory}\n"
         f"📅 Год покупки: {lot.year}\n"
         f"🔒 Блокировки: {lot.locks}\n"
-        f"💰 <b>Текущая цена:</b> {price}₽\n"
+        f"💰 <b>Текущая цена:</b> {price}тг\n"
         f"🆔 ID: <code>{lot.id}</code>"
     )
 
 # Кнопки для ставок
 def get_bid_buttons(current_price: int, lot_id: int):
-    increments = [100, 500, 1000]
+    increments = [1000, 5000, 10000]
     bid_buttons = [
         InlineKeyboardButton(
-            text=f"💸 +{inc}₽ (итого {current_price + inc}₽)",
+            text=f"💸 +{inc} (итого {current_price + inc})",
             callback_data=f"bid_{lot_id}_{inc}"
         )
         for inc in increments
@@ -230,7 +230,7 @@ async def process_lot_bids(lot_id: int):
             )
             highest_bid = highest_bid_res.scalars().first()
             if highest_bid and new_price <= highest_bid.amount:
-                await callback.answer(f"⚠️ Ставка должна быть больше {highest_bid.amount}₽.", show_alert=True)
+                await callback.answer(f"⚠️ Ставка должна быть больше {highest_bid.amount}тг.", show_alert=True)
                 lot_bid_queues[lot_id].task_done()
                 continue
 
@@ -238,7 +238,7 @@ async def process_lot_bids(lot_id: int):
             lot.current_price = new_price
             await session.commit()
 
-        await callback.answer(f"✅ Ставка {new_price}₽ принята.", show_alert=True)
+        await callback.answer(f"✅ Ставка {new_price}тг принята.", show_alert=True)
         await callback.message.answer(f"✅ Ваша ставка {new_price} принята.")
         bot = callback.bot
         async with async_session() as session:
@@ -250,13 +250,13 @@ async def process_lot_bids(lot_id: int):
             for w in watchers_list:
                 if w.user_id != user_id:
                     try:
-                        await bot.send_message(w.user_id, f"📢 Новая ставка по лоту #{lot_id}: {new_price}₽")
+                        await bot.send_message(w.user_id, f"📢 Новая ставка по лоту #{lot_id}: {new_price}тг")
                     except:
 
                         pass
 
             try:
-                await bot.send_message(lot.seller_id, f"📢 Новая ставка по вашему лоту #{lot_id}: {new_price}₽")
+                await bot.send_message(lot.seller_id, f"📢 Новая ставка по вашему лоту #{lot_id}: {new_price}тг")
             except:
                 pass
 
