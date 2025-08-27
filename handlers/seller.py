@@ -695,7 +695,7 @@ async def rules_handler(message: Message):
     )
     #file = FSInputFile(r"handlers\public_offer_full.pdf")
     #await message.answer_document(file, caption="Вот ваша публичная оферта 📄")
-    await message.answer_document("BQACAgIAAxkBAAILBmiqyrl460aT0va3aSk3XxoCsuxYAALZgAACSqJZSS72h72QspuONgQ", caption="Вот ваша публичная оферта 📄")  # file_id
+    await message.answer_document("BQACAgIAAxkBAAIMMmiurZ79j_kRakOnl_FCaeLh3h6WAAIzeAACa6h5SWwb6wGFMuMeNgQ", caption="Вот ваша публичная оферта 📄")  # file_id
 
 
 
@@ -717,6 +717,7 @@ async def accept_deal(callback: types.CallbackQuery):
     await callback.message.edit_text(
         f"✅ Вы приняли сделку по лоту '{lot_title}'. Контакт передан победителю."
     )
+    await callback.bot.send_message(settings.moderator_chat_id, f"{lot_title}:Контакт {seller_contact} передан победителю {winner_id}.")
 
     # Сообщение победителю
     await callback.bot.send_message(
@@ -773,6 +774,52 @@ async def reject_lot(callback: types.CallbackQuery):
     bot = callback.bot
     await bot.send_message(lot.seller_id,"❌Ваш лот отклонён.Пожалуйста, уточните причину у службы поддержки")
     await callback.answer("❌ Лот отклонён", show_alert=True)
+
+
+
+
+
+
+# @router.message(
+#         F.content_type.in_({"document", "photo", "video", "audio", "voice", "sticker", "video_note", "animation"}))
+# async def any_file_handler(message: Message):
+#         file_obj = None
+#         kind = None
+#
+#         if message.document:
+#             file_obj = message.document
+#             kind = "document"
+#         elif message.photo:
+#             file_obj = message.photo[-1]  # берём самое большое фото
+#             kind = "photo"
+#         elif message.video:
+#             file_obj = message.video
+#             kind = "video"
+#         elif message.audio:
+#             file_obj = message.audio
+#             kind = "audio"
+#         elif message.voice:
+#             file_obj = message.voice
+#             kind = "voice"
+#         elif message.sticker:
+#             file_obj = message.sticker
+#             kind = "sticker"
+#         elif message.video_note:
+#             file_obj = message.video_note
+#             kind = "video_note"
+#         elif message.animation:
+#             file_obj = message.animation
+#             kind = "animation"
+#
+#         if not file_obj:
+#             return await message.answer("Файл не распознан")
+#
+#         await message.answer(
+#             f"Тип: <b>{kind}</b>\n"
+#             f"file_id:\n<code>{file_obj.file_id}</code>\n\n"
+#             f"file_unique_id:\n<code>{file_obj.file_unique_id}</code>",
+#             parse_mode="HTML"
+#         )
 
 
 

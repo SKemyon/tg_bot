@@ -58,7 +58,7 @@ def format_lot_card(lot):
         f"💾 Память: {lot.memory}\n"
         f"📅 Год покупки: {lot.year}\n"
         f"🔒 Блокировки: {lot.locks}\n"
-        f"💰 <b>Текущая цена:</b> {price}тг\n"
+        f"💰 <b>Стартовая цена:</b> {price}тг\n"
         f"🆔 ID: <code>{lot.id}</code>"
     )
 
@@ -67,7 +67,7 @@ def get_bid_buttons(current_price: int, lot_id: int):
     increments = [1000, 5000, 10000]
     bid_buttons = [
         InlineKeyboardButton(
-            text=f"💸 +{inc} (итого {current_price + inc})",
+            text=f"💸+{inc}",
             callback_data=f"bid_{lot_id}_{inc}"
         )
         for inc in increments
@@ -250,7 +250,7 @@ async def process_lot_bids(lot_id: int):
             for w in watchers_list:
                 if w.user_id != user_id:
                     try:
-                        await bot.send_message(w.user_id, f"📢 Новая ставка по лоту #{lot_id}: {new_price}тг")
+                        await bot.send_message(w.user_id, f"📢 Новая ставка по лоту #{lot_id} {lot.title}: {new_price}тг")
                     except:
 
                         pass
