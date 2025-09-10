@@ -183,6 +183,8 @@ async def process_bid(callback: CallbackQuery):
         if member.status in ("left", "kicked"):
             await callback.answer("📢 Подпишитесь на канал, чтобы участвовать в торгах.", show_alert=True)
             return
+
+
     except TelegramBadRequest:
         await callback.answer("⚠️ Ошибка проверки подписки.", show_alert=True)
         return
@@ -209,6 +211,11 @@ async def process_lot_bids(lot_id: int):
             lot = await session.get(Lot, lot_id)
             if not lot:
                 await callback.answer("❌ Лот не найден.", show_alert=True)
+                lot_bid_queues[lot_id].task_done()
+                continue
+
+            if lot.seller_id == user_id:
+                await callback.answer("❌ Нельзя ставить на свой лот.", show_alert=True)
                 lot_bid_queues[lot_id].task_done()
                 continue
 

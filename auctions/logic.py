@@ -28,7 +28,7 @@ async def start_auction(lot_id: int, bot):
         if not lot or lot.auction_started:
             return
 
-        await asyncio.sleep(settings.auction_duration_minutes * 60)
+        await asyncio.sleep(settings.auction_duration_minutes * 30)
         lot.auction_started = True
         lot.current_price = lot.start_price
         await session.commit()
