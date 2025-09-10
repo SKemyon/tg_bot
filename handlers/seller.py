@@ -665,7 +665,7 @@ async def approve_lot(callback: types.CallbackQuery):
         f"📱 {lot.title}",
         full_description,
         f"💰 Старт: {lot.start_price}тг",
-        f"⏳ Торги начнутся через {settings.auction_duration_minutes} минут."
+        f"⏳ Торги начнутся через {settings.auction_duration_minutes/2} минут."
     )
 
 
@@ -678,8 +678,8 @@ async def approve_lot(callback: types.CallbackQuery):
     # старт аукциона
     asyncio.create_task(start_auction(lot.id, callback.bot))
     bot = callback.bot
-    await bot.send_message(lot.seller_id, f"✅ Лот одобрен и опубликован! Торги начнутся через {settings.auction_duration_minutes} минут")
-    await callback.answer(f"✅ Лот одобрен и опубликован! Торги начнутся через {settings.auction_duration_minutes} минут", show_alert=True)
+    await bot.send_message(lot.seller_id, f"✅ Лот одобрен и опубликован! Торги начнутся через {settings.auction_duration_minutes/2} минут")
+    await callback.answer(f"✅ Лот одобрен и опубликован! Торги начнутся через {settings.auction_duration_minutes/2} минут", show_alert=True)
 
 
 
